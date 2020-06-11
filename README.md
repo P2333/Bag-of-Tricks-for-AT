@@ -2,7 +2,7 @@
 Empirical tricks for training state-of-the-art robust models on CIFAR-10
 
 ## Statement
-The copyrights are reserved by Tianyu Pang, Xiao Yang
+The copyrights are reserved by [Tianyu Pang](http://ml.cs.tsinghua.edu.cn/~tianyu/), [Xiao Yang](https://github.com/ShawnXYang).
 
 ## Threat Model
 We consider the most widely studied setting:
