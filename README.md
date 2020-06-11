@@ -55,6 +55,8 @@ python train_cifar.py --model WideResNet --attack pgd \
                       --use_stronger_adv --stronger_index 0
 ```
 
+The intuitive description is to **give the adversaries enough capacity (large epsilon) while avoid excessive generation (early stop w.r.t. attack iteration)**. 
+
 ## Empirical Evaluations
 *The evaluation results on the baselines are quoted from [Croce et al. 2020](https://arxiv.org/abs/2003.01690) and their github ([here](https://github.com/fra31/auto-attack))*.
 The robust accuracy is evaluated at `eps = 8/255`, except for those marked with * for which `eps = 0.031`.\
