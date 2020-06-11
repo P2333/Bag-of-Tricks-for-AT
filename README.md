@@ -24,7 +24,8 @@ Early stop w.r.t. training epochs was first implicitly used in [TRADES](https://
 
 - **Label smoothing** (![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) *Useful*). Label smoothing is advocated by [Shafahi et al. 2019](https://arxiv.org/abs/1910.11585) to mimic the adversarial training procedure. The relevant flags include `--labelsmooth` indicates whether apply this trick, while `--labelsmoothvalue` indicates the degree of smoothing applied on the label vectors. When `--labelsmoothvalue=0`, there is no label smoothing applied. 
 
-- **Larger batch size** (![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+) *Insignificance*). The typical batch size used for CIFAR-10 is 128 in the adversarial setting. In the meanwhile, [Xie et al. 2019](https://arxiv.org/pdf/1812.03411.pdf) apply a large batch size of 4096 to perform adversarial training on ImageNet, where the model is distributed on 128 GPUs and has quite robust performance. The relevant flag is `--batch-size`.
+- **Larger batch size** (![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+) *Insignificance*). The typical batch size used for CIFAR-10 is 128 in the adversarial setting. In the meanwhile, [Xie et al. 2019](https://arxiv.org/pdf/1812.03411.pdf) apply a large batch size of 4096 to perform adversarial training on ImageNet, where the model is distributed on 128 GPUs and has quite robust performance. The relevant flag is `--batch-size`. According to [Goyal et al. 2017](https://arxiv.org/abs/1706.02677
+), we take bs=128 and lr=0.1 as a basis, and scale the lr when we use larger batch size, e.g., bs=256 and lr=0.2.
 
 - **Weight decay** (![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) *Useful*). The default weight decay used in [Rice et al., 2020](https://arxiv.org/abs/2002.11569) is 5e-4, in [Qin et al. 2019](https://arxiv.org/abs/1907.02610) 2e-4. The relevant flag is `--weight_decay`.
 
