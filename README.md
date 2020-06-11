@@ -45,12 +45,13 @@ Early stop w.r.t. training epochs was first implicitly used in [TRADES](https://
 
 running command for training:
 ```python
-python train_cifar.py --model WideResNet --attack pgd --lr-schedule piecewise --norm l_inf --epsilon 8 \
-                                              --epochs 110 --attack-iters 10 --pgd-alpha 2 \
-                                              --fname auto \
-                                              --batch-size 128 \
-                                              --earlystopPGD --earlystopPGDepoch1 60 --earlystopPGDepoch2 100 \
-                                              --use_stronger_adv --stronger_index 0
+python train_cifar.py --model WideResNet --attack pgd \
+                      --lr-schedule piecewise --norm l_inf --epsilon 8 \
+                      --epochs 110 --attack-iters 10 --pgd-alpha 2 \
+                      --fname auto \
+                      --batch-size 128 \
+                      --earlystopPGD --earlystopPGDepoch1 60 --earlystopPGDepoch2 100 \
+                      --use_stronger_adv --stronger_index 0
 ```
 
 ## Empirical Evaluations
