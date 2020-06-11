@@ -34,13 +34,16 @@ Early stop w.r.t. training epochs was first implicitly used in [TRADES](https://
 
 - **Increasing epsilon** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*).
 
-## Selected Tricks
-- Total epoch: 110
-- Batch size: 128
+## Finally Selected Tricks
+- Architecture: WideResNet-34-10
 - Optimizer: Momentum SGD with default hyperparameters
-- Learning rate: 0.1; decay to 0.01 at 100 epoch; decay to 0.001 at 105 epoch
-- Early stop w.r.t. attack iteration: tolerence t=1; let t=2 at 60 epoch; let t=3 at 100 epoch
-- Epsilon: 8/255; increase to 12/255 at 100 epoch; increase to 16/255 at 105 epoch
+- Total epoch: `110`
+- Batch size: `128`
+- Weight decay: `5e-4`
+- Learning rate: `lr=0.1`; decay to `lr=0.01` at 100 epoch; decay to `0.001` at 105 epoch
+- Early stop w.r.t. attack iteration: tolerence `t=1`; let `t=2` at 60 epoch; let `t=3` at 100 epoch
+- Maximal epsilon: `eps=8/255`; increase to `eps=12/255` at 100 epoch; increase to `eps=16/255` at 105 epoch
+- Attack step size: `alpha=2/255` 
 
 ## Empirical Evaluations
 *The evaluation results on the baselines are quoted from [Croce et al. 2020](https://arxiv.org/abs/2003.01690) and their github ([here](https://github.com/fra31/auto-attack))*.
