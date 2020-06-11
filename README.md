@@ -43,6 +43,16 @@ Early stop w.r.t. training epochs was first implicitly used in [TRADES](https://
 - **Maximal epsilon**: `eps=8/255`; increase to `eps=12/255` at 100 epoch; increase to `eps=16/255` at 105 epoch
 - **Attack step size**: `alpha=2/255` 
 
+running command for training:
+```python
+python train_cifar.py --model WideResNet --attack pgd --lr-schedule piecewise --norm l_inf --epsilon 8 \
+                                              --epochs 110 --attack-iters 10 --pgd-alpha 2 \
+                                              --fname auto \
+                                              --batch-size 128 \
+                                              --earlystopPGD --earlystopPGDepoch1 60 --earlystopPGDepoch2 100 \
+                                              --use_stronger_adv --stronger_index 0
+```
+
 ## Empirical Evaluations
 *The evaluation results on the baselines are quoted from [Croce et al. 2020](https://arxiv.org/abs/2003.01690) and their github ([here](https://github.com/fra31/auto-attack))*.
 The robust accuracy is evaluated at `eps = 8/255`, except for those marked with * for which `eps = 0.031`.\
