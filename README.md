@@ -38,11 +38,15 @@ Early stopping w.r.t. training epochs was first introduced in the [code of TRADE
 
 - **Label smoothing** (![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) *Useful*). Label smoothing is advocated by [Shafahi et al. 2019](https://arxiv.org/abs/1910.11585) to mimic the adversarial training procedure. The relevant flags include `--labelsmooth` indicates whether apply this trick, while `--labelsmoothvalue` indicates the degree of smoothing applied on the label vectors. When `--labelsmoothvalue=0`, there is no label smoothing applied. (*Note that only moderate label smoothing (~0.2) is helpful, while exccessive label smoothing (>0.3) could be harmful, as observed in [Jiang et al. 2020](https://arxiv.org/abs/2006.13726)*)
 
-- **Weight decay** (![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) *Useful*). The default weight decay used in [Rice et al., 2020](https://arxiv.org/abs/2002.11569) is 5e-4, in [Qin et al. 2019](https://arxiv.org/abs/1907.02610) 2e-4. The relevant flag is `--weight_decay`.
+- **Optimizer** (![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+) *Insignificance*). Most of the AT methods apply SGD with momentum as the optimizer. In other cases, [Carmon et al. 2019](https://arxiv.org/abs/1905.13736) apply SGD with Nesterov, and [Rice et al., 2020](https://arxiv.org/abs/2002.11569) apply Adam for cyclic learning rate schedule. The relevant flag is `--optimizer`, which include common optimizers implemented by official Pytorch API and recently proposed gradient centralization trick by [Yong et al. 2020](https://arxiv.org/abs/2004.01461).
 
-- **Activation function** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*). As shown in [Xie et al., 2020](https://arxiv.org/pdf/2006.14536.pdf), the smooth alternatives of `ReLU`, including `Softplus` and `GELU` can promote the performance of adversarial training.
+- **Weight decay** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*). The values of weight decay used in previous AT methods mainly fall into `1e-4` (e.g., [Wang et al. 2019](proceedings.mlr.press/v97/wang19i/wang19i.pdf)), `2e-4` (e.g., [Madry et al. 2018](https://arxiv.org/abs/1706.06083)), and `5e-4` (e.g., [Rice et al., 2020](https://arxiv.org/abs/2002.11569)). We find that slightly different values of weight decay could largely affect the robustness of the adversarially trained models.
 
-- **Increasing epsilon** (![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) *Useful*). We find that the overfitting of the adversarial training procedure can be explained as: As the model been trained more and more robust, a fixed adversary will become relatively weaker, and consequently the effect of regularization induced by the crafed adversarial examples will also become more insignificant. To overcome this issue, **we need stronger adversaries as the training robust accuracy increase**. We propose to gradually increase epsilon to have a stronger adversary during the training procedure. The relevant flags are `--use_stronger_adv` to indicate whether use this trick, and `--stronger_index` to use a specifc manually designed epsilon schedule. Alternative choice for stronger adversaries include [Multi-target attack](https://arxiv.org/abs/1910.09338).
+- **Activation function** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*). As shown in [Xie et al., 2020](https://arxiv.org/pdf/2006.14536.pdf), the smooth alternatives of `ReLU`, including `Softplus` and `GELU` can promote the performance of adversarial training. The relevant flags are `--activation` to choose the activation, and `--softplus_beta` to set the beta for Softplus. Other hyperparameters are used by default in the code.
+
+- **Model architecture** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*).
+
+- **BN mode** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*).
 
 
 ## Finally Selected Tricks
@@ -81,5 +85,13 @@ The robust accuracy is evaluated at `eps = 8/255`, except for those marked with 
 | [(Rice et al., 2020)](https://arxiv.org/abs/2002.11569)| 85.34| - | - | - | - | 53.60| 53.35|
 | [(Zhang et al., 2019b)](https://arxiv.org/abs/1901.08573)\*| 84.92| 55.08 | 54.04 | 53.82 | 59.48| 53.18| 53.04|
 
-## Acknowledgement
-Our code is based on [Rice et al., 2020](https://arxiv.org/abs/2002.11569) and their github ([here](https://github.com/locuslab/robust_overfitting)).
+## Reference
+For technical details and full experimental results, please check the paper.
+```
+@article{pang2020bag, 
+	author = {Tianyu Pang and Xiao Yang and Yinpeng Dong and Hang Su and Jun Zhu}, 
+	title = {Bag of Tricks for Adversarial Training}, 
+	journal = {Preprint},
+	year = {2020}
+}
+```
