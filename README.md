@@ -1,14 +1,26 @@
 # Bag of Tricks for Adversarial Training
-Empirical tricks for training state-of-the-art robust models on CIFAR-10
+Empirical tricks for training state-of-the-art robust models on CIFAR-10. A playground for fine-tuning the basic adversarial training settings. Created by [Tianyu Pang](http://ml.cs.tsinghua.edu.cn/~tianyu/), [Xiao Yang](https://github.com/ShawnXYang), [Yinpeng Dong](http://ml.cs.tsinghua.edu.cn/~yinpeng/), [Hang Su](http://www.suhangss.me/), and [Jun Zhu](http://ml.cs.tsinghua.edu.cn/~jun/index.shtml).
 
-## Statement
-The copyrights are reserved by [Tianyu Pang](http://ml.cs.tsinghua.edu.cn/~tianyu/), [Xiao Yang](https://github.com/ShawnXYang) . *A summary paper is working in progress and will be made public before September, please come back and cite our paper if you find the selected tricks useful in your projects*.
+## Environment settings and libraries we used in our experiments
+
+This project is tested under the following environment settings:
+- OS: Ubuntu 16.04.3
+- GPU: Geforce 2080 Ti or Tesla P100
+- Cuda: 9.0, Cudnn: v7.03
+- Python: 3.6
+- PyTorch: >= 1.4.0
+- Torchvision: >= 0.4.0
+
+## Acknowledgement
+The codes are modifed based on [Rice et al. 2020](https://github.com/locuslab/robust_overfitting), and the model architectures are implemented by [pytorch-cifar](https://github.com/kuangliu/pytorch-cifar).
 
 ## Threat Model
 We consider the most widely studied setting:
 - **L-inf norm constraint with the maximal epsilon be 8/255 on CIFAR-10**.
 - **No accessibility to additional data, neither labeled nor unlabeled**.
-- **Utilize the min-max framework in [Madry et al. 2018](https://arxiv.org/abs/1706.06083)**.
+- **Utilize the PGD-AT framework in [Madry et al. 2018](https://arxiv.org/abs/1706.06083)**.
+
+(Implementations on the TRADES framework can be found [here](https://github.com/ShawnXYang/AT_HE))
 
 ## Trick Candidates
 Importance rate: ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*  ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) *Useful*  ![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+) *Insignificance*
@@ -16,7 +28,7 @@ Importance rate: ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)
 - **Early stop w.r.t. training epochs** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*).
 Early stop w.r.t. training epochs was first implicitly used in [TRADES](https://arxiv.org/abs/1901.08573), while later thoroughly studied by [Rice et al., 2020](https://arxiv.org/abs/2002.11569). The consider this trick as a default choice.
 
-- **Early stop w.r.t. attack iterations** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*). Early stop w.r.t. attack iterations were studied by [Wang et al. 2019](proceedings.mlr.press/v97/wang19i/wang19i.pdf) and [Zhang et al. 2020](https://arxiv.org/abs/2002.11242). Here we exploit the strategy of the later one, where the authors show that this trick can promote clean accuracy. The relevant flags include `--earlystopPGD` indicates whether apply this trick, while '--earlystopPGDepoch1' and '--earlystopPGDepoch2' separately indicate the epoch to increase the tolerence t by one, as detailed in [Zhang et al. 2020](https://arxiv.org/abs/2002.11242).
+- **Early stop w.r.t. attack intensity** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*). Early stop w.r.t. attack iterations were studied by [Wang et al. 2019](proceedings.mlr.press/v97/wang19i/wang19i.pdf) and [Zhang et al. 2020](https://arxiv.org/abs/2002.11242). Here we exploit the strategy of the later one, where the authors show that this trick can promote clean accuracy. The relevant flags include `--earlystopPGD` indicates whether apply this trick, while '--earlystopPGDepoch1' and '--earlystopPGDepoch2' separately indicate the epoch to increase the tolerence t by one, as detailed in [Zhang et al. 2020](https://arxiv.org/abs/2002.11242).
 
 - **Warmup w.r.t. learning rate** (![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+) *Insignificance*). Warmup w.r.t. learning rate was found useful for [FastAT](https://arxiv.org/abs/2001.03994), while [Rice et al., 2020](https://arxiv.org/abs/2002.11569) found that piecewise decay schedule is more compatible with early stop w.r.t. training epochs. The relevant flags include `--warmup_lr` indicates whether apply this trick, while `--warmup_lr_epoch` indicates the end epoch of the gradually increase of learning rate.
 
