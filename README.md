@@ -42,23 +42,19 @@ Early stopping w.r.t. training epochs was first introduced in the [code of TRADE
 
 - **Weight decay** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*). The values of weight decay used in previous AT methods mainly fall into `1e-4` (e.g., [Wang et al. 2019](proceedings.mlr.press/v97/wang19i/wang19i.pdf)), `2e-4` (e.g., [Madry et al. 2018](https://arxiv.org/abs/1706.06083)), and `5e-4` (e.g., [Rice et al., 2020](https://arxiv.org/abs/2002.11569)). We find that slightly different values of weight decay could largely affect the robustness of the adversarially trained models.
 
-- **Activation function** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*). As shown in [Xie et al., 2020](https://arxiv.org/pdf/2006.14536.pdf), the smooth alternatives of `ReLU`, including `Softplus` and `GELU` can promote the performance of adversarial training. The relevant flags are `--activation` to choose the activation, and `--softplus_beta` to set the beta for Softplus. Other hyperparameters are used by default in the code.
+- **Activation function** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*). As shown in [Xie et al., 2020a](https://arxiv.org/pdf/2006.14536.pdf), the smooth alternatives of `ReLU`, including `Softplus` and `GELU` can promote the performance of adversarial training. The relevant flags are `--activation` to choose the activation, and `--softplus_beta` to set the beta for Softplus. Other hyperparameters are used by default in the code.
 
-- **Model architecture** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*).
-
-- **BN mode** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*).
+- **BN mode** (![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) *Critical*). TRADES applies eval mode of BN when crafting adversarial examples during training, while PGD-AT methods implemented by [Madry et al. 2018](https://arxiv.org/abs/1706.06083) or [Rice et al., 2020](https://arxiv.org/abs/2002.11569) use train mode of BN to craft training adversarial examples. As indicated by [Xie et al., 2020b](https://arxiv.org/pdf/1906.03787.pdf), properly dealing with BN layers is critical to obtain a well-performed adversarially trained model, while train mode of BN during multi-step PGD process may blur the distribution. 
 
 
-## Finally Selected Tricks
+## Baseline setting (on CIFAR-10)
 - **Architecture**: WideResNet-34-10
 - **Optimizer**: Momentum SGD with default hyperparameters
 - **Total epoch**: `110`
 - **Batch size**: `128`
 - **Weight decay**: `5e-4`
 - **Learning rate**: `lr=0.1`; decay to `lr=0.01` at 100 epoch; decay to `0.001` at 105 epoch
-- **Early stop w.r.t. attack iteration**: tolerence `t=1`; let `t=2` at 60 epoch; let `t=3` at 100 epoch
-- **Maximal epsilon**: `eps=8/255`; increase to `eps=12/255` at 100 epoch; increase to `eps=16/255` at 105 epoch
-- **Attack step size**: `alpha=2/255` 
+- **BN mode**: eval
 
 running command for training:
 ```python
@@ -66,9 +62,7 @@ python train_cifar.py --model WideResNet --attack pgd \
                       --lr-schedule piecewise --norm l_inf --epsilon 8 \
                       --epochs 110 --attack-iters 10 --pgd-alpha 2 \
                       --fname auto \
-                      --batch-size 128 \
-                      --earlystopPGD --earlystopPGDepoch1 60 --earlystopPGDepoch2 100 \
-                      --use_stronger_adv --stronger_index 0
+                      --batch-size 128
 ```
 
 The intuitive description is to **give the adversaries enough capacity (large epsilon) while avoid excessive generation (early stop w.r.t. attack iteration)**. 
