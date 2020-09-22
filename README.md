@@ -87,14 +87,3 @@ python train_cifar.py --model WideResNet --attack pgd \
 | **OURS (TRADES)** | WRN-34-10| 85.34 | 54.64 |
 | [(Huang et al., 2020)](https://arxiv.org/abs/2002.10319) | WRN-34-10| 83.48 | 53.34 |
 | [(Zhang et al., 2019)](https://arxiv.org/abs/1901.08573) | WRN-34-10| 84.92 | 53.04 |
-
-## Reference
-For technical details and full experimental results, please check the paper.
-```
-@article{pang2020bag, 
-	author = {Tianyu Pang and Xiao Yang and Yinpeng Dong and Hang Su and Jun Zhu}, 
-	title = {Bag of Tricks for Adversarial Training}, 
-	journal = {Preprint},
-	year = {2020}
-}
-```
