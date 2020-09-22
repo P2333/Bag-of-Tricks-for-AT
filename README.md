@@ -62,22 +62,31 @@ python train_cifar.py --model WideResNet --attack pgd \
                       --lr-schedule piecewise --norm l_inf --epsilon 8 \
                       --epochs 110 --attack-iters 10 --pgd-alpha 2 \
                       --fname auto \
-                      --batch-size 128
+		      --optimizer 'momentum' \
+		      --weight_decay 5e-4
+                      --batch-size 128 \
+		      --BNeval \
 ```
-
-The intuitive description is to **give the adversaries enough capacity (large epsilon) while avoid excessive generation (early stop w.r.t. attack iteration)**. 
 
 ## Empirical Evaluations
 *The evaluation results on the baselines are quoted from [Croce et al. 2020](https://arxiv.org/abs/2003.01690) and their github ([here](https://github.com/fra31/auto-attack))*.
-The robust accuracy is evaluated at `eps = 8/255`, except for those marked with * for which `eps = 0.031`.\
-**Note**: ‡ indicates models which exploit additional data for training (e.g. unlabeled data, pre-training).
-|paper           | clean         | APGD-CE | APGD-DLR | FAB | Square | AA  | AA+ |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| [(Carmon et al., 2019)](https://arxiv.org/abs/1905.13736)‡| 89.69| 61.47| 60.64| 60.62| 66.63 | 59.65 | 59.50|
-| [(Alayrac et al., 2019)](https://arxiv.org/abs/1905.13725)‡| 86.46| 59.86 | 62.03 |58.20 | 66.37| 56.92| 56.01|
-| [(Hendrycks et al., 2019)](https://arxiv.org/abs/1901.09960)‡| 87.11| 57.00 | 56.96 | 55.40 | 61.99 | 54.99| 54.86|
-| [(Rice et al., 2020)](https://arxiv.org/abs/2002.11569)| 85.34| - | - | - | - | 53.60| 53.35|
-| [(Zhang et al., 2019b)](https://arxiv.org/abs/1901.08573)\*| 84.92| 55.08 | 54.04 | 53.82 | 59.48| 53.18| 53.04|
+
+### CIFAR-10 (`eps = 8/255`)
+|paper           | Architecture | clean         | AA |
+|---|:---:|:---:|:---:|
+| **OURS (TRADES)** | WRN-34-20| 86.43 | 54.39 |
+| **OURS (TRADES)** | WRN-34-10| 85.48 | 53.80 |
+| [(Pang et al., 2020)](https://arxiv.org/abs/2002.08619) | WRN-34-20| 85.14 | 53.74 |
+| [(Zhang et al., 2020)](https://arxiv.org/abs/2002.11242)| WRN-34-10| 84.52 | 53.51 |
+| [(Rice et al., 2020)](https://arxiv.org/abs/2002.11569) | WRN-34-20| 85.34 | 53.35 |
+
+
+### CIFAR-10 (`eps = 0.031`)
+|paper           | Architecture | clean         | AA |
+|---|:---:|:---:|:---:|
+| **OURS (TRADES)** | WRN-34-10| 85.34 | 54.64 |
+| [(Huang et al., 2020)](https://arxiv.org/abs/2002.10319) | WRN-34-10| 83.48 | 53.34 |
+| [(Zhang et al., 2019)](https://arxiv.org/abs/1901.08573) | WRN-34-10| 84.92 | 53.04 |
 
 ## Reference
 For technical details and full experimental results, please check the paper.
