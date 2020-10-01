@@ -71,7 +71,7 @@ python train_cifar.py --model WideResNet --attack pgd \
 ## Empirical Evaluations
 *The evaluation results on the baselines are quoted from [Croce et al. 2020](https://arxiv.org/abs/2003.01690) and their github ([here](https://github.com/fra31/auto-attack))*.
 
-### CIFAR-10 (`eps = 8/255`)
+### CIFAR-10 (eps = 8/255)
 |paper           | Architecture | clean         | AA |
 |---|:---:|:---:|:---:|
 | **OURS (TRADES)** | WRN-34-20| 86.43 | 54.39 |
@@ -81,7 +81,7 @@ python train_cifar.py --model WideResNet --attack pgd \
 | [(Rice et al., 2020)](https://arxiv.org/abs/2002.11569) | WRN-34-20| 85.34 | 53.35 |
 
 
-### CIFAR-10 (`eps = 0.031`)
+### CIFAR-10 (eps = 0.031)
 |paper           | Architecture | clean         | AA |
 |---|:---:|:---:|:---:|
 | **OURS (TRADES)** | WRN-34-10| 85.34 | 54.64 |
