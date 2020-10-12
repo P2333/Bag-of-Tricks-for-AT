@@ -73,13 +73,13 @@ python train_cifar.py --model WideResNet --attack pgd \
 ```
 
 ## Empirical Evaluations
-*The evaluation results on the baselines are quoted from [Croce et al. 2020](https://arxiv.org/abs/2003.01690) and their github ([here](https://github.com/fra31/auto-attack))*.
+*The evaluation results on the baselines are quoted from  [AutoAttack](https://arxiv.org/abs/2003.01690) ([CODE](https://github.com/fra31/auto-attack/blob/master/autoattack/examples/eval.py))*.
 
 ### CIFAR-10 (eps = 8/255)
 |paper           | Architecture | clean         | AA |
 |---|:---:|:---:|:---:|
-| **OURS (TRADES)** | WRN-34-20| 86.43 | 54.39 |
-| **OURS (TRADES)** | WRN-34-10| 85.48 | 53.80 |
+| **OURS (TRADES)**[[Checkpoint](http://ml.cs.tsinghua.edu.cn/~xiaoyang/downloads/bag_of_tricks/wide20_trades_eps8_tricks.pt)] | WRN-34-20| 86.43 | 54.39 |
+| **OURS (TRADES)**[[Checkpoint](http://ml.cs.tsinghua.edu.cn/~xiaoyang/downloads/bag_of_tricks/wide10_trades_eps8_tricks.pt)] | WRN-34-10| 85.48 | 53.80 |
 | [(Pang et al., 2020)](https://arxiv.org/abs/2002.08619) | WRN-34-20| 85.14 | 53.74 |
 | [(Zhang et al., 2020)](https://arxiv.org/abs/2002.11242)| WRN-34-10| 84.52 | 53.51 |
 | [(Rice et al., 2020)](https://arxiv.org/abs/2002.11569) | WRN-34-20| 85.34 | 53.35 |
@@ -88,6 +88,6 @@ python train_cifar.py --model WideResNet --attack pgd \
 ### CIFAR-10 (eps = 0.031)
 |paper           | Architecture | clean         | AA |
 |---|:---:|:---:|:---:|
-| **OURS (TRADES)** | WRN-34-10| 85.34 | 54.64 |
+| **OURS (TRADES)**[[Checkpoint](http://ml.cs.tsinghua.edu.cn/~xiaoyang/downloads/bag_of_tricks/wide10_trades_tricks.pt)] | WRN-34-10| 85.34 | 54.64 |
 | [(Huang et al., 2020)](https://arxiv.org/abs/2002.10319) | WRN-34-10| 83.48 | 53.34 |
 | [(Zhang et al., 2019)](https://arxiv.org/abs/1901.08573) | WRN-34-10| 84.92 | 53.04 |
