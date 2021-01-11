@@ -14,6 +14,7 @@ from wideresnet import WideResNet
 from utils_plus import (upper_limit, lower_limit, std, clamp, get_loaders,
     attack_pgd, evaluate_pgd, evaluate_standard)
 from autoattack import AutoAttack
+# installing AutoAttack by: pip install git+https://github.com/fra31/auto-attack
 
 cifar10_mean = (0.4914, 0.4822, 0.4465)
 cifar10_std = (0.2471, 0.2435, 0.2616)
@@ -82,7 +83,6 @@ def main():
     print('PGD-10 (10 restarts, step 2, CW loss) acc: ', pgd_acc_CW)
 
     ### Evaluate AutoAttack ###
-    # installing AutoAttack by: pip install git+https://github.com/fra31/auto-attack
     l = [x for (x, y) in test_loader_nonorm]
     x_test = torch.cat(l, 0)
     l = [y for (x, y) in test_loader_nonorm]
