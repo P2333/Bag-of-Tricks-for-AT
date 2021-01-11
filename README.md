@@ -73,7 +73,7 @@ python train_cifar.py --model WideResNet --attack pgd \
 ```
 
 ## Empirical Evaluations
-*The evaluation results on the baselines are quoted from  [AutoAttack](https://arxiv.org/abs/2003.01690) ([evaluation code](https://github.com/fra31/auto-attack/blob/master/autoattack/examples/eval.py))*. 
+*The evaluation results on the baselines are quoted from  [AutoAttack](https://arxiv.org/abs/2003.01690) ([evaluation code](https://github.com/P2333/Bag-of-Tricks-for-AT/blob/master/eval_cifar.py))*. 
 
 Note that **OURS (TRADES)** below only change the weight decay value from `2e-4` (used in original TRADES) to `5e-4`, and train for 110 epochs (lr decays at 100 and 105 epochs).
 
