@@ -1,7 +1,7 @@
 # Bag of Tricks for Adversarial Training
 Empirical tricks for training state-of-the-art robust models on CIFAR-10. A playground for fine-tuning the basic adversarial training settings. 
 
-[Bag of Tricks for Adversarial Training](https://arxiv.org/abs/2010.00467) (ICLR 2021)
+[Bag of Tricks for Adversarial Training](https://openreview.net/forum?id=Xb8xvrtB8Ce) (ICLR 2021)
 
 [Tianyu Pang](http://ml.cs.tsinghua.edu.cn/~tianyu/), [Xiao Yang](https://github.com/ShawnXYang), [Yinpeng Dong](http://ml.cs.tsinghua.edu.cn/~yinpeng/), [Hang Su](http://www.suhangss.me/), and [Jun Zhu](http://ml.cs.tsinghua.edu.cn/~jun/index.shtml).
 
