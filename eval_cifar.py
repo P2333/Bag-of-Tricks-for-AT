@@ -12,18 +12,9 @@ import torch.nn.functional as F
 from preactresnet import PreActResNet18
 from wideresnet import WideResNet
 from utils_plus import (upper_limit, lower_limit, std, clamp, get_loaders,
-    attack_pgd, evaluate_pgd, evaluate_standard)
+    attack_pgd, evaluate_pgd, evaluate_standard, normalize)
 from autoattack import AutoAttack
 # installing AutoAttack by: pip install git+https://github.com/fra31/auto-attack
-
-cifar10_mean = (0.4914, 0.4822, 0.4465)
-cifar10_std = (0.2471, 0.2435, 0.2616)
-mu = torch.tensor(cifar10_mean).view(3,1,1).cuda()
-std = torch.tensor(cifar10_std).view(3,1,1).cuda()
-
-def normalize(X):
-    return (X - mu)/std
-
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -54,7 +45,7 @@ def main():
 
     logger.info(args)
 
-    _, test_loader, test_loader_nonorm = get_loaders(args.data_dir, args.batch_size)
+    _, test_loader = get_loaders(args.data_dir, args.batch_size)
 
     best_state_dict = torch.load(os.path.join(args.out_dir, 'model_best.pth'))
 
@@ -75,24 +66,23 @@ def main():
     print('Clean acc: ', test_acc)
 
     ### Evaluate PGD (CE loss) acc ###
-    _, pgd_acc_CE = evaluate_pgd(test_loader, model_test, attack_iters=10, restarts=10, step=2, use_CWloss=False)
+    _, pgd_acc_CE = evaluate_pgd(test_loader, model_test, attack_iters=10, restarts=1, eps=8, step=2, use_CWloss=False)
     print('PGD-10 (10 restarts, step 2, CE loss) acc: ', pgd_acc_CE)
 
     ### Evaluate PGD (CW loss) acc ###
-    _, pgd_acc_CW = evaluate_pgd(test_loader, model_test, attack_iters=10, restarts=10, step=2, use_CWloss=True)
+    _, pgd_acc_CW = evaluate_pgd(test_loader, model_test, attack_iters=10, restarts=1, eps=8, step=2, use_CWloss=True)
     print('PGD-10 (10 restarts, step 2, CW loss) acc: ', pgd_acc_CW)
 
     ### Evaluate AutoAttack ###
-    l = [x for (x, y) in test_loader_nonorm]
+    l = [x for (x, y) in test_loader]
     x_test = torch.cat(l, 0)
-    l = [y for (x, y) in test_loader_nonorm]
+    l = [y for (x, y) in test_loader]
     y_test = torch.cat(l, 0)
     class normalize_model():
         def __init__(self, model):
             self.model_test = model
         def __call__(self, x):
-            x_norm = normalize(x)
-            return self.model_test(x_norm)
+            return self.model_test(normalize(x))
     new_model = normalize_model(model_test)
     epsilon = 8 / 255.
     adversary = AutoAttack(new_model, norm='Linf', eps=epsilon, version='standard')
