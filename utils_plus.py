@@ -5,41 +5,41 @@ from torchvision import datasets, transforms
 from torch.utils.data.sampler import SubsetRandomSampler
 import numpy as np
 
+upper_limit, lower_limit = 1, 0
+
 cifar10_mean = (0.4914, 0.4822, 0.4465)
 cifar10_std = (0.2471, 0.2435, 0.2616)
-
 mu = torch.tensor(cifar10_mean).view(3,1,1).cuda()
 std = torch.tensor(cifar10_std).view(3,1,1).cuda()
 
-upper_limit = ((1 - mu)/ std)
-lower_limit = ((0 - mu)/ std)
-
+def normalize(X):
+    return (X - mu)/std
 
 def clamp(X, lower_limit, upper_limit):
     return torch.max(torch.min(X, upper_limit), lower_limit)
 
-
-def get_loaders(dir_, batch_size):
+def get_loaders(dir_, batch_size, DATASET='CIFAR10'):
     train_transform = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(cifar10_mean, cifar10_std),
+        transforms.ToTensor()
     ])
     test_transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(cifar10_mean, cifar10_std),
-    ])
-    test_transform_nonorm = transforms.Compose([
         transforms.ToTensor()
     ])
     num_workers = 2
-    train_dataset = datasets.CIFAR10(
-        dir_, train=True, transform=train_transform, download=True)
-    test_dataset = datasets.CIFAR10(
-        dir_, train=False, transform=test_transform, download=True)
-    test_dataset_nonorm = datasets.CIFAR10(
-        dir_, train=False, transform=test_transform_nonorm, download=True)
+
+    if DATASET == 'CIFAR10':
+        train_dataset = datasets.CIFAR10(
+            dir_, train=True, transform=train_transform, download=True)
+        test_dataset = datasets.CIFAR10(
+            dir_, train=False, transform=test_transform, download=True)
+    elif DATASET == 'CIFAR100':
+        train_dataset = datasets.CIFAR100(
+            dir_, train=True, transform=train_transform, download=True)
+        test_dataset = datasets.CIFAR100(
+            dir_, train=False, transform=test_transform, download=True)
+
     train_loader = torch.utils.data.DataLoader(
         dataset=train_dataset,
         batch_size=batch_size,
@@ -54,14 +54,7 @@ def get_loaders(dir_, batch_size):
         pin_memory=True,
         num_workers=2,
     )
-    test_loader_nonorm = torch.utils.data.DataLoader(
-        dataset=test_dataset_nonorm,
-        batch_size=batch_size,
-        shuffle=False,
-        pin_memory=True,
-        num_workers=2,
-    )
-    return train_loader, test_loader, test_loader_nonorm
+    return train_loader, test_loader
 
 def CW_loss(x, y):
     x_sorted, ind_sorted = x.sort(dim=1)
@@ -73,14 +66,13 @@ def CW_loss(x, y):
 def attack_pgd(model, X, y, epsilon, alpha, attack_iters, restarts, use_CWloss=False):
     max_loss = torch.zeros(y.shape[0]).cuda()
     max_delta = torch.zeros_like(X).cuda()
-    for zz in range(restarts):
+    for _ in range(restarts):
         delta = torch.zeros_like(X).cuda()
-        for i in range(len(epsilon)):
-            delta[:, i, :, :].uniform_(-epsilon[i][0][0].item(), epsilon[i][0][0].item())
+        delta.uniform_(-epsilon, epsilon)
         delta.data = clamp(delta, lower_limit - X, upper_limit - X)
         delta.requires_grad = True
         for _ in range(attack_iters):
-            output = model(X + delta)
+            output = model(normalize(X + delta))
             index = torch.where(output.max(1)[1] == y)
             if len(index[0]) == 0:
                 break
@@ -92,19 +84,19 @@ def attack_pgd(model, X, y, epsilon, alpha, attack_iters, restarts, use_CWloss=F
             grad = delta.grad.detach()
             d = delta[index[0], :, :, :]
             g = grad[index[0], :, :, :]
-            d = clamp(d + alpha * torch.sign(g), -epsilon, epsilon)
+            d = torch.clamp(d + alpha * torch.sign(g), -epsilon, epsilon)
             d = clamp(d, lower_limit - X[index[0], :, :, :], upper_limit - X[index[0], :, :, :])
             delta.data[index[0], :, :, :] = d
             delta.grad.zero_()
-        all_loss = F.cross_entropy(model(X+delta), y, reduction='none').detach()
+        all_loss = F.cross_entropy(model(normalize(X + delta)), y, reduction='none').detach()
         max_delta[all_loss >= max_loss] = delta.detach()[all_loss >= max_loss]
         max_loss = torch.max(max_loss, all_loss)
     return max_delta
 
 
-def evaluate_pgd(test_loader, model, attack_iters, restarts, step=2, use_CWloss=False):
-    epsilon = (8 / 255.) / std
-    alpha = (step / 255.) / std
+def evaluate_pgd(test_loader, model, attack_iters, restarts, eps=8, step=2, use_CWloss=False):
+    epsilon = eps / 255.
+    alpha = step / 255.
     pgd_loss = 0
     pgd_acc = 0
     n = 0
@@ -113,7 +105,7 @@ def evaluate_pgd(test_loader, model, attack_iters, restarts, step=2, use_CWloss=
         X, y = X.cuda(), y.cuda()
         pgd_delta = attack_pgd(model, X, y, epsilon, alpha, attack_iters, restarts, use_CWloss=use_CWloss)
         with torch.no_grad():
-            output = model(X + pgd_delta)
+            output = model(normalize(X + pgd_delta))
             loss = F.cross_entropy(output, y)
             pgd_loss += loss.item() * y.size(0)
             pgd_acc += (output.max(1)[1] == y).sum().item()
@@ -129,7 +121,7 @@ def evaluate_standard(test_loader, model):
     with torch.no_grad():
         for i, (X, y) in enumerate(test_loader):
             X, y = X.cuda(), y.cuda()
-            output = model(X)
+            output = model(normalize(X))
             loss = F.cross_entropy(output, y)
             test_loss += loss.item() * y.size(0)
             test_acc += (output.max(1)[1] == y).sum().item()
