@@ -7,14 +7,6 @@ import numpy as np
 
 upper_limit, lower_limit = 1, 0
 
-cifar10_mean = (0.4914, 0.4822, 0.4465)
-cifar10_std = (0.2471, 0.2435, 0.2616)
-mu = torch.tensor(cifar10_mean).view(3,1,1).cuda()
-std = torch.tensor(cifar10_std).view(3,1,1).cuda()
-
-def normalize(X):
-    return (X - mu)/std
-
 def clamp(X, lower_limit, upper_limit):
     return torch.max(torch.min(X, upper_limit), lower_limit)
 
@@ -63,7 +55,7 @@ def CW_loss(x, y):
     loss_value = -(x[np.arange(x.shape[0]), y] - x_sorted[:, -2] * ind - x_sorted[:, -1] * (1. - ind))
     return loss_value.mean()
 
-def attack_pgd(model, X, y, epsilon, alpha, attack_iters, restarts, use_CWloss=False):
+def attack_pgd(model, X, y, epsilon, alpha, attack_iters, restarts, use_CWloss=False, normalize=None):
     max_loss = torch.zeros(y.shape[0]).cuda()
     max_delta = torch.zeros_like(X).cuda()
     for _ in range(restarts):
@@ -94,7 +86,7 @@ def attack_pgd(model, X, y, epsilon, alpha, attack_iters, restarts, use_CWloss=F
     return max_delta
 
 
-def evaluate_pgd(test_loader, model, attack_iters, restarts, eps=8, step=2, use_CWloss=False):
+def evaluate_pgd(test_loader, model, attack_iters, restarts, eps=8, step=2, use_CWloss=False, normalize=None):
     epsilon = eps / 255.
     alpha = step / 255.
     pgd_loss = 0
@@ -103,7 +95,7 @@ def evaluate_pgd(test_loader, model, attack_iters, restarts, eps=8, step=2, use_
     model.eval()
     for i, (X, y) in enumerate(test_loader):
         X, y = X.cuda(), y.cuda()
-        pgd_delta = attack_pgd(model, X, y, epsilon, alpha, attack_iters, restarts, use_CWloss=use_CWloss)
+        pgd_delta = attack_pgd(model, X, y, epsilon, alpha, attack_iters, restarts, use_CWloss=use_CWloss, normalize=normalize)
         with torch.no_grad():
             output = model(normalize(X + pgd_delta))
             loss = F.cross_entropy(output, y)
@@ -113,7 +105,7 @@ def evaluate_pgd(test_loader, model, attack_iters, restarts, eps=8, step=2, use_
     return pgd_loss/n, pgd_acc/n
 
 
-def evaluate_standard(test_loader, model):
+def evaluate_standard(test_loader, model, normalize=None):
     test_loss = 0
     test_acc = 0
     n = 0
