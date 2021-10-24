@@ -75,7 +75,11 @@ python train_cifar.py --model WideResNet --attack pgd \
 ## Empirical Evaluations
 *The evaluation results on the baselines are quoted from  [AutoAttack](https://arxiv.org/abs/2003.01690) ([evaluation code](https://github.com/P2333/Bag-of-Tricks-for-AT/blob/master/eval_cifar.py))*. 
 
-Note that **OURS (TRADES)** below only change the weight decay value from `2e-4` (used in original TRADES) to `5e-4`, and train for 110 epochs (lr decays at 100 and 105 epochs).
+Note that **OURS (TRADES)** below only change the weight decay value from `2e-4` (used in original TRADES) to `5e-4`, and train for 110 epochs (lr decays at 100 and 105 epochs). To run the evaluation script `eval_cifar.py`, the command should be
+```python
+python eval_cifar.py --out-dir 'path_to_the_model' --ATmethods 'TRADES'
+```
+Here `ATmethods` refer to the AT framework (e.g., PGDAT or TRADES).
 
 ### CIFAR-10 (eps = 8/255)
 |paper           | Architecture | clean         | AA |
