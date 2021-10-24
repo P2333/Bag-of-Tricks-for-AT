@@ -11,10 +11,21 @@ import torch.nn.functional as F
 
 from preactresnet import PreActResNet18
 from wideresnet import WideResNet
-from utils_plus import (upper_limit, lower_limit, std, clamp, get_loaders,
-    attack_pgd, evaluate_pgd, evaluate_standard, normalize)
+from utils_plus import (upper_limit, lower_limit, clamp, get_loaders,
+    attack_pgd, evaluate_pgd, evaluate_standard)
 from autoattack import AutoAttack
 # installing AutoAttack by: pip install git+https://github.com/fra31/auto-attack
+
+cifar10_mean = (0.4914, 0.4822, 0.4465)
+cifar10_std = (0.2471, 0.2435, 0.2616)
+mu = torch.tensor(cifar10_mean).view(3,1,1).cuda()
+std = torch.tensor(cifar10_std).view(3,1,1).cuda()
+
+def normalize_PGDAT(X):
+    return (X - mu)/std
+
+def normalize_TRADES(X):
+    return X
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -23,6 +34,7 @@ def get_args():
     parser.add_argument('--epsilon', default=8, type=int)
     parser.add_argument('--out-dir', default='train_fgsm_output', type=str, help='Output directory')
     parser.add_argument('--seed', default=0, type=int, help='Random seed')
+    parser.add_argument('--ATmethods', default='TRADES', type=str)
     return parser.parse_args()
 
 
@@ -48,11 +60,16 @@ def main():
     _, test_loader = get_loaders(args.data_dir, args.batch_size)
 
     best_state_dict = torch.load(os.path.join(args.out_dir, 'model_best.pth'))
+    
+    if args.ATmethods == 'TRADES':
+        normalize = normalize_TRADES
+    elif args.ATmethods == 'PGDAT':
+        normalize = normalize_PGDAT
 
     # Evaluation
     model_test = PreActResNet18().cuda()
     # model_test = WideResNet(34, 10, widen_factor=10, dropRate=0.0)
-    model_test = nn.DataParallel(model_test).cuda()
+    model_test = nn.DataParallel(model_test).cuda() # put this line after loading state_dict if the weights are saved without module.
     if 'state_dict' in best_state_dict.keys():
         model_test.load_state_dict(best_state_dict['state_dict'])
     else:
@@ -62,15 +79,15 @@ def main():
 
 
     ### Evaluate clean acc ###
-    _, test_acc = evaluate_standard(test_loader, model_test)
+    _, test_acc = evaluate_standard(test_loader, model_test, normalize=normalize)
     print('Clean acc: ', test_acc)
 
     ### Evaluate PGD (CE loss) acc ###
-    _, pgd_acc_CE = evaluate_pgd(test_loader, model_test, attack_iters=10, restarts=1, eps=8, step=2, use_CWloss=False)
+    _, pgd_acc_CE = evaluate_pgd(test_loader, model_test, attack_iters=10, restarts=1, eps=8, step=2, use_CWloss=False, normalize=normalize)
     print('PGD-10 (10 restarts, step 2, CE loss) acc: ', pgd_acc_CE)
 
     ### Evaluate PGD (CW loss) acc ###
-    _, pgd_acc_CW = evaluate_pgd(test_loader, model_test, attack_iters=10, restarts=1, eps=8, step=2, use_CWloss=True)
+    _, pgd_acc_CW = evaluate_pgd(test_loader, model_test, attack_iters=10, restarts=1, eps=8, step=2, use_CWloss=True, normalize=normalize)
     print('PGD-10 (10 restarts, step 2, CW loss) acc: ', pgd_acc_CW)
 
     ### Evaluate AutoAttack ###
