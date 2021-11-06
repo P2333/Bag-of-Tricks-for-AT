@@ -889,11 +889,11 @@ def main():
             np.savetxt(args.fname+'/train_robust_acc_record.txt', np.array(train_robust_acc_record))
             np.savetxt(args.fname+'/train_grad_record.txt', np.array(train_grad_record))
 
-            test_loss_record.append(test_loss/train_n)
-            test_acc_record.append(test_acc/train_n)
-            test_robust_loss_record.append(test_robust_loss/train_n)
-            test_robust_acc_record.append(test_robust_acc/train_n)
-            test_grad_record.append(test_grad/train_n)
+            test_loss_record.append(test_loss/test_n)
+            test_acc_record.append(test_acc/test_n)
+            test_robust_loss_record.append(test_robust_loss/test_n)
+            test_robust_acc_record.append(test_robust_acc/test_n)
+            test_grad_record.append(test_grad/test_n)
 
             np.savetxt(args.fname+'/test_loss_record.txt', np.array(test_loss_record))
             np.savetxt(args.fname+'/test_acc_record.txt', np.array(test_acc_record))
