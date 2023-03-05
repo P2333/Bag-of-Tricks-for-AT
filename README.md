@@ -97,3 +97,33 @@ Here `ATmethods` refer to the AT framework (e.g., PGDAT or TRADES).
 | **OURS (TRADES)**[[Checkpoint](http://ml.cs.tsinghua.edu.cn/~xiaoyang/downloads/bag_of_tricks/wide10_trades_tricks.pt)] | WRN-34-10| 85.34 | 54.64 |
 | [(Huang et al., 2020)](https://arxiv.org/abs/2002.10319) | WRN-34-10| 83.48 | 53.34 |
 | [(Zhang et al., 2019)](https://arxiv.org/abs/1901.08573) | WRN-34-10| 84.92 | 53.04 |
+
+## References
+If you find the code useful for your research, please consider citing
+```bib
+@inproceedings{pang2021bag,
+  title={Bag of Tricks for Adversarial Training},
+  author={Pang, Tianyu and Yang, Xiao and Dong, Yinpeng and Su, Hang and Zhu, Jun},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2021}
+}
+```
+
+and/or our related works
+
+```bib
+@article{wang2023better,
+  title={Better Diffusion Models Further Improve Adversarial Training},
+  author={Wang, Zekai and Pang, Tianyu and Du, Chao and Lin, Min and Liu, Weiwei and Yan, Shuicheng},
+  journal={arXiv preprint arXiv:2302.04638},
+  year={2023}
+}
+```
+```bib
+@inproceedings{pang2022robustness,
+  title={Robustness and Accuracy Could be Reconcilable by (Proper) Definition},
+  author={Pang, Tianyu and Lin, Min and Yang, Xiao and Zhu, Jun and Yan, Shuicheng},
+  booktitle={International Conference on Machine Learning (ICML)},
+  year={2022}
+}
+```
